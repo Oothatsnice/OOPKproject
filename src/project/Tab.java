@@ -28,8 +28,9 @@ public class Tab {
 	private ChatObserver myChatObserver;
 	private ClientObserver myClientObserver;
 	private FileObserver myFileObserver;
-	private FileReceiver myFileReceiver;
-	private FileSender myFileSender;
+	private FileTransferGUI myFileTransferGUI;
+//	private FileReceiver myFileReceiver;
+//	private FileSender myFileSender;
 	private String myIP;
 	
 	/**
@@ -89,17 +90,20 @@ public class Tab {
 	    	outString.append("> ");
 	    	outString.append("<filerequest");
 	    	File tempFile = myChatPanel.getFile();
-	    	try {
-				myFileSender = new FileSender(tempFile);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+
 	    	outString.append(" name=" + tempFile.getName());
 	    	outString.append(" size=" + tempFile.length());
 	    	outString.append("> ");
 	    	outString.append(inString);
 	    	outString.append(" </filerequest> ");
 	    	outString.append("</message> ");
+	    	
+	    	try {
+//	    		myFileTransferGUI = new FileTransferGUI(outString.toString(),  tempFile);
+				myFileSender = new FileSender(tempFile);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}	    	
 	        return outString.toString();
 		}
 	}
@@ -163,8 +167,13 @@ public class Tab {
 			try{
 				String verifyStr = verifyType(tempString);
 				if (verifyStr.equals("filerequest")) {
-					newTempString = askFileAcceptance(tempString);
-					myClient.sendMessage(newTempString);
+					myFileReceiver = new FileReceiver(tempString);
+					
+					myClient(myFileReceiver.getOutString());
+					
+//					myFileTransferGUI = new FileTransferGUI(tempString);
+//					newTempString = askFileAcceptance(tempString);				/////////////////////////////////////////////////
+//					myClient.sendMessage(newTempString);
 				}
 				else if (verifyStr.equals("text")) {
 					newTempString = verifyMessage(tempString);
@@ -174,6 +183,7 @@ public class Tab {
 					String[] tempStringArray = tempString.split("\\s");
 					int port = Integer.parseInt(tempStringArray[4].substring(5,
 							tempStringArray[4].length()-1));
+					
 					myFileSender.sendFileTo(myIP, port);
 				}
 				else {
@@ -287,12 +297,21 @@ public class Tab {
 			for (int i = 5; i < len - 2; i++) {
 				question.append(stringArray[i]);
 			}
-			int ans = JOptionPane.showConfirmDialog(new JFrame(), question.toString());
+			
+			myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));   ///////////////////////////////////////////////
+			myFileReceiver.openGUI();
+			
+			
+//			int ans = JOptionPane.showConfirmDialog(new JFrame(), question.toString());
+			
 			StringBuilder outString = new StringBuilder();
+			
 			if (ans == JOptionPane.YES_OPTION) {
-				myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));
-				myFileReceiver.start();
+//				myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));
+//				myFileReceiver.start();
+				
 				String respons = JOptionPane.showInputDialog("Leave reply message");
+				
 		    	outString.append("<message");
 				String name = myChatPanel.getName();
 		    	outString.append(" sender=" + name);
@@ -306,7 +325,9 @@ public class Tab {
 		        return outString.toString();
 			}
 			else {
+				
 				String respons = JOptionPane.showInputDialog("Leave reply message");
+				
 		    	outString.append("<message");
 				String name = myChatPanel.getName();
 		    	outString.append(" sender=" + name);
