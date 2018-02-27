@@ -89,6 +89,7 @@ public class Server extends Thread{
         private String name;
         private FileSender myFileSender;
         private FileReceiver myFileReceiver;
+        private ReceiverObserver myReceiverObserver;
         
         /**
          * Constructor, set number for connection
@@ -118,8 +119,11 @@ public class Server extends Thread{
 	            		distributeMessage(inputLine);
 	            	}
 	            	else if (verifyStr.equals("filerequest")) {
-						tempString = askFileAcceptance(inputLine);
-						out.println(tempString);	            		
+	            		myFileReceiver = new FileReceiver(inputLine, "Server");
+						myReceiverObserver = new ReceiverObserver();
+						myFileReceiver.getObservable().addObserver(myReceiverObserver);
+//						tempString = askFileAcceptance(inputLine);
+//						out.println(tempString);	            		
 	            	}
 	            	else if (verifyStr.equals("filerespons")) {
 						String[] tempStringArray = inputLine.split("\\s");
@@ -136,6 +140,13 @@ public class Server extends Thread{
         		e.printStackTrace();
         	}
         }
+        
+    	private class ReceiverObserver implements Observer{
+    		public void update(Observable a, Object str) {
+    			String tempString = (String) str;
+    			out.println(tempString);
+    		}
+    	}
         
         public void setFileSender(File inFile) {
         	try {
@@ -183,57 +194,57 @@ public class Server extends Thread{
 			return null;
 		}
 	
-		public String askFileAcceptance(String msg) {
-			String[] stringArray = msg.split("\\s");
-//			for (String a : stringArray) {
-//				System.out.println(a);
+//		public String askFileAcceptance(String msg) {
+//			String[] stringArray = msg.split("\\s");
+////			for (String a : stringArray) {
+////				System.out.println(a);
+////			}
+//			int len = stringArray.length;
+//			String sender = stringArray[1].substring(7, stringArray[1].length()-1);
+//			String fileName = stringArray[3].substring(5, stringArray[3].length());
+//			String fileSize = stringArray[4].substring(5, stringArray[4].length()-1);
+//			StringBuilder question = new StringBuilder();
+//			question.append(sender);
+//			question.append(" wants to send you file \"");
+//			question.append(fileName);
+//			question.append(" of size \"");
+//			question.append(fileSize);
+//			question.append(". Supplied message: ");
+//			for (int i = 5; i < len - 2; i++) {
+//				question.append(stringArray[i]);
 //			}
-			int len = stringArray.length;
-			String sender = stringArray[1].substring(7, stringArray[1].length()-1);
-			String fileName = stringArray[3].substring(5, stringArray[3].length());
-			String fileSize = stringArray[4].substring(5, stringArray[4].length()-1);
-			StringBuilder question = new StringBuilder();
-			question.append(sender);
-			question.append(" wants to send you file \"");
-			question.append(fileName);
-			question.append(" of size \"");
-			question.append(fileSize);
-			question.append(". Supplied message: ");
-			for (int i = 5; i < len - 2; i++) {
-				question.append(stringArray[i]);
-			}
-			int ans = JOptionPane.showConfirmDialog(new JFrame(), question.toString());
-			StringBuilder outString = new StringBuilder();
-			if (ans == JOptionPane.YES_OPTION) {
-				myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));
-				myFileReceiver.start();
-				String respons = JOptionPane.showInputDialog("Leave reply message");
-		    	outString.append("<message");
-		    	outString.append(" sender=Server");
-		    	outString.append("> ");
-		    	outString.append("<filerespons");
-		    	outString.append(" reply=yes");
-		    	outString.append(" port=" + myFileReceiver.getPort() + "> ");
-		    	outString.append(respons);
-		    	outString.append(" </filerespons> ");
-		    	outString.append("</message> ");
-		        return outString.toString();
-			}
-			else {
-				String respons = JOptionPane.showInputDialog("Leave reply message");
-		    	outString.append("<message");
-				String name = "Server";
-		    	outString.append(" sender=" + name);
-		    	outString.append("> ");
-		    	outString.append("<filerespons");
-		    	outString.append(" reply=no");
-		    	outString.append(" port=99999> ");
-		    	outString.append(respons);
-		    	outString.append(" </filerespons> ");
-		    	outString.append("</message> ");
-		        return outString.toString();
-			}
-		}
+//			int ans = JOptionPane.showConfirmDialog(new JFrame(), question.toString());
+//			StringBuilder outString = new StringBuilder();
+//			if (ans == JOptionPane.YES_OPTION) {
+//				myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));
+//				myFileReceiver.start();
+//				String respons = JOptionPane.showInputDialog("Leave reply message");
+//		    	outString.append("<message");
+//		    	outString.append(" sender=Server");
+//		    	outString.append("> ");
+//		    	outString.append("<filerespons");
+//		    	outString.append(" reply=yes");
+//		    	outString.append(" port=" + myFileReceiver.getPort() + "> ");
+//		    	outString.append(respons);
+//		    	outString.append(" </filerespons> ");
+//		    	outString.append("</message> ");
+//		        return outString.toString();
+//			}
+//			else {
+//				String respons = JOptionPane.showInputDialog("Leave reply message");
+//		    	outString.append("<message");
+//				String name = "Server";
+//		    	outString.append(" sender=" + name);
+//		    	outString.append("> ");
+//		    	outString.append("<filerespons");
+//		    	outString.append(" reply=no");
+//		    	outString.append(" port=99999> ");
+//		    	outString.append(respons);
+//		    	outString.append(" </filerespons> ");
+//		    	outString.append("</message> ");
+//		        return outString.toString();
+//			}
+//		}
 		
 		
     }

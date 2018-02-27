@@ -29,8 +29,9 @@ public class Tab {
 	private ClientObserver myClientObserver;
 	private FileObserver myFileObserver;
 	private FileTransferGUI myFileTransferGUI;
-//	private FileReceiver myFileReceiver;
-//	private FileSender myFileSender;
+	private FileReceiver myFileReceiver; 	//
+	private FileSender myFileSender;		//
+	private ReceiverObserver myReceiverObserver;
 	private String myIP;
 	
 	/**
@@ -65,6 +66,17 @@ public class Tab {
 	 */
 	public JPanel getPanel(){
 		return myPanel;
+	}
+	
+	private class ReceiverObserver implements Observer{
+		public void update(Observable a, Object str) {
+			String tempString = (String) str;
+			try {
+				myClient.sendMessage(tempString);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private class FileObserver implements Observer{
@@ -167,9 +179,12 @@ public class Tab {
 			try{
 				String verifyStr = verifyType(tempString);
 				if (verifyStr.equals("filerequest")) {
-					myFileReceiver = new FileReceiver(tempString);
+					myFileReceiver = new FileReceiver(tempString, myChatPanel.getName());
+					myReceiverObserver = new ReceiverObserver();
+					myFileReceiver.getObservable().addObserver(myReceiverObserver);
 					
-					myClient(myFileReceiver.getOutString());
+
+//					myClient(myFileReceiver.getOutString());
 					
 //					myFileTransferGUI = new FileTransferGUI(tempString);
 //					newTempString = askFileAcceptance(tempString);				/////////////////////////////////////////////////
@@ -273,74 +288,74 @@ public class Tab {
 			return ender;
 		}
 		
-		/**
-		 * Send question to user if it wants to receive file or not
-		 * @param msg
-		 * @return
-		 */
-		public String askFileAcceptance(String msg) {
-			String[] stringArray = msg.split("\\s");
-//			for (String a : stringArray) {
-//				System.out.println(a);
+//		/**
+//		 * Send question to user if it wants to receive file or not
+//		 * @param msg
+//		 * @return
+//		 */
+//		public String askFileAcceptance(String msg) {
+//			String[] stringArray = msg.split("\\s");
+////			for (String a : stringArray) {
+////				System.out.println(a);
+////			}
+//			int len = stringArray.length;
+//			String sender = stringArray[1].substring(7, stringArray[1].length()-1);
+//			String fileName = stringArray[3].substring(5, stringArray[3].length());
+//			String fileSize = stringArray[4].substring(5, stringArray[4].length()-1);
+//			StringBuilder question = new StringBuilder();
+//			question.append(sender);
+//			question.append(" wants to send you file \"");
+//			question.append(fileName);
+//			question.append(" of size \"");
+//			question.append(fileSize);
+//			question.append(". Supplied message: ");
+//			for (int i = 5; i < len - 2; i++) {
+//				question.append(stringArray[i]);
 //			}
-			int len = stringArray.length;
-			String sender = stringArray[1].substring(7, stringArray[1].length()-1);
-			String fileName = stringArray[3].substring(5, stringArray[3].length());
-			String fileSize = stringArray[4].substring(5, stringArray[4].length()-1);
-			StringBuilder question = new StringBuilder();
-			question.append(sender);
-			question.append(" wants to send you file \"");
-			question.append(fileName);
-			question.append(" of size \"");
-			question.append(fileSize);
-			question.append(". Supplied message: ");
-			for (int i = 5; i < len - 2; i++) {
-				question.append(stringArray[i]);
-			}
-			
-			myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));   ///////////////////////////////////////////////
-			myFileReceiver.openGUI();
-			
-			
-//			int ans = JOptionPane.showConfirmDialog(new JFrame(), question.toString());
-			
-			StringBuilder outString = new StringBuilder();
-			
-			if (ans == JOptionPane.YES_OPTION) {
-//				myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));
-//				myFileReceiver.start();
-				
-				String respons = JOptionPane.showInputDialog("Leave reply message");
-				
-		    	outString.append("<message");
-				String name = myChatPanel.getName();
-		    	outString.append(" sender=" + name);
-		    	outString.append("> ");
-		    	outString.append("<filerespons");
-		    	outString.append(" reply=yes");
-		    	outString.append(" port=" + myFileReceiver.getPort() + "> ");
-		    	outString.append(respons);
-		    	outString.append(" </filerespons> ");
-		    	outString.append("</message> ");
-		        return outString.toString();
-			}
-			else {
-				
-				String respons = JOptionPane.showInputDialog("Leave reply message");
-				
-		    	outString.append("<message");
-				String name = myChatPanel.getName();
-		    	outString.append(" sender=" + name);
-		    	outString.append("> ");
-		    	outString.append("<filerespons");
-		    	outString.append(" reply=no");
-		    	outString.append(" port=99999> ");
-		    	outString.append(respons);
-		    	outString.append(" </filerespons> ");
-		    	outString.append("</message> ");
-		        return outString.toString();
-			}
-		}
+//			
+//			myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));   ///////////////////////////////////////////////
+//			myFileReceiver.openGUI();
+//			
+//			
+////			int ans = JOptionPane.showConfirmDialog(new JFrame(), question.toString());
+//			
+//			StringBuilder outString = new StringBuilder();
+//			
+//			if (ans == JOptionPane.YES_OPTION) {
+////				myFileReceiver = new FileReceiver(fileName, Integer.parseInt(fileSize));
+////				myFileReceiver.start();
+//				
+//				String respons = JOptionPane.showInputDialog("Leave reply message");
+//				
+//		    	outString.append("<message");
+//				String name = myChatPanel.getName();
+//		    	outString.append(" sender=" + name);
+//		    	outString.append("> ");
+//		    	outString.append("<filerespons");
+//		    	outString.append(" reply=yes");
+//		    	outString.append(" port=" + myFileReceiver.getPort() + "> ");
+//		    	outString.append(respons);
+//		    	outString.append(" </filerespons> ");
+//		    	outString.append("</message> ");
+//		        return outString.toString();
+//			}
+//			else {
+//				
+//				String respons = JOptionPane.showInputDialog("Leave reply message");
+//				
+//		    	outString.append("<message");
+//				String name = myChatPanel.getName();
+//		    	outString.append(" sender=" + name);
+//		    	outString.append("> ");
+//		    	outString.append("<filerespons");
+//		    	outString.append(" reply=no");
+//		    	outString.append(" port=99999> ");
+//		    	outString.append(respons);
+//		    	outString.append(" </filerespons> ");
+//		    	outString.append("</message> ");
+//		        return outString.toString();
+//			}
+//		}
 		
 		public String verifyType(String msg) {
 			String[] stringArray = msg.split("\\s");

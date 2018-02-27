@@ -5,18 +5,13 @@ package project;
  * Created 2018-02-19
  */
 import java.net.*;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
-import javax.swing.text.StyledDocument;
+import javax.swing.*;
+import javax.swing.text.*;
 
 import project.Server.ClientHandler;
 
@@ -39,11 +34,18 @@ public class FileReceiver extends Thread{
     private int usedPort;
 	private JTextPane myTextPane;
 	private StyledDocument myDoc;
-    
+	private YesButton myYesButton;
+	private NoButton myNoButton;
+	private ReceiverObservable myObservable;
+	private String myName;
+	
     /**
      * Constructor
      */
-    public FileReceiver(String inMsg){
+    public FileReceiver(String inMsg, String inName){
+    	myObservable = new ReceiverObservable();
+    	myName = inName;
+    	
     	current = 0;
 		String[] stringArray = inMsg.split("\\s");
 	//	for (String a : stringArray) {
@@ -58,22 +60,39 @@ public class FileReceiver extends Thread{
 		question.append(sender);
 		question.append(" wants to send you file \"");
 		question.append(fileName);
-		question.append(" of size \"");
+		question.append("\" of size \"");
 		question.append(fileSize);
-		question.append(". Supplied message: ");
+		question.append("\". Supplied message: ");
 		for (int i = 5; i < len - 2; i++) {
 			question.append(stringArray[i]);
 		}
+		question.append("\n");
 		
 		myFrame = new JFrame();
-		myFrame.setLayout(new BoxLayout(myFrame, BoxLayout.Y_AXIS));
+		myFrame.setTitle("FileReceiver");
+		myFrame.getContentPane().setLayout(new BoxLayout(myFrame.getContentPane(), BoxLayout.Y_AXIS));
 		myTextPane = new JTextPane();
-		myTextPane.setPreferredSize(new Dimension(400,450));
+		myTextPane.setPreferredSize(new Dimension(400,350));
 		myTextPane.setEditable(false);
 		
 		myDoc = myTextPane.getStyledDocument();
+		try {
+			myDoc.insertString(myDoc.getLength(), question.toString(), null);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 		
-		myFrame.add(myTextPane);
+		JPanel bringThePane = new JPanel();
+		bringThePane.setLayout(new GridLayout(1, 2));
+		myYesButton = new YesButton();
+		myNoButton = new NoButton();
+		bringThePane.add(myYesButton);
+		bringThePane.add(myNoButton);
+		
+		myFrame.getContentPane().add(myTextPane);
+		myFrame.getContentPane().add(bringThePane);
+		myFrame.pack();
+		
 		myFrame.setVisible(true);
 		
     }
@@ -109,7 +128,15 @@ public class FileReceiver extends Thread{
         	
         	do {
         		bytesRead = is.read(myByteArray, current, myByteArray.length-current);
-        		if (bytesRead >= 0) current += bytesRead;
+        		
+        		if (bytesRead >= 0) {
+        			current += bytesRead;
+        			try {
+        				myDoc.insertString(myDoc.getLength(), Integer.toString(current), null);
+        			} catch (BadLocationException e) {
+        				e.printStackTrace();
+        			}
+        		}
         	} while(current < fileSize);
         	
         	bos.write(myByteArray, 0, current);
@@ -125,6 +152,17 @@ public class FileReceiver extends Thread{
         clientSocket = receiveSocket.accept();
     }
     
+    public ReceiverObservable getObservable() {
+    	return myObservable;
+    }
+    
+    class ReceiverObservable extends Observable{
+    	public void sendUpdate(String msg) {
+    		setChanged();
+    		notifyObservers(msg);
+    	}
+    }
+    
     private class YesButton extends JButton implements ActionListener{
     	public YesButton(){
     		this.setText("Yes");
@@ -132,21 +170,50 @@ public class FileReceiver extends Thread{
     	}
 
 		public void actionPerformed(ActionEvent arg0) {
+			myYesButton.setEnabled(false);
+			myNoButton.setEnabled(false);
 			
 			
+			FileReceiver.this.start();
+			
+			String respons = JOptionPane.showInputDialog("Leave reply message");
+			StringBuilder outString = new StringBuilder();
+	    	outString.append("<message");
+			String name = myName;
+	    	outString.append(" sender=" + name);
+	    	outString.append("> ");
+	    	outString.append("<filerespons");
+	    	outString.append(" reply=yes");
+	    	outString.append(" port=" + FileReceiver.this.getPort() + "> ");
+	    	outString.append(respons);
+	    	outString.append(" </filerespons> ");
+	    	outString.append("</message> ");
+	        myObservable.sendUpdate(outString.toString());
 		}
     	
     }
     
     private class NoButton extends JButton implements ActionListener{
     	public NoButton(){
-    		this.setText("Yes");
+    		this.setText("No");
     		this.addActionListener(this);
     	}
 
 		public void actionPerformed(ActionEvent arg0) {
-			
-			
+			String respons = JOptionPane.showInputDialog("Leave reply message");
+			StringBuilder outString = new StringBuilder();
+	    	outString.append("<message");
+			String name = myName;
+	    	outString.append(" sender=" + name);
+	    	outString.append("> ");
+	    	outString.append("<filerespons");
+	    	outString.append(" reply=no");
+	    	outString.append(" port=99999> ");
+	    	outString.append(respons);
+	    	outString.append(" </filerespons> ");
+	    	outString.append("</message> ");
+	    	myObservable.sendUpdate(outString.toString());
+			myFrame.dispose();
 		}
     	
     }
