@@ -121,7 +121,7 @@ public class FileReceiver extends Thread{
         try {        	
         	byte[] myByteArray = new byte[fileSize];
         	InputStream is = clientSocket.getInputStream();
-        	fos = new FileOutputStream("C:/Temp/" + fileName);    	
+        	fos = new FileOutputStream("/afs/kth.se/home/g/n/gnoren/" + fileName);    	
         	bos = new BufferedOutputStream(fos);
         	bytesRead = is.read(myByteArray, 0, myByteArray.length);
         	current = bytesRead;

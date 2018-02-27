@@ -127,9 +127,13 @@ public class Server extends Thread{
 	            	}
 	            	else if (verifyStr.equals("filerespons")) {
 						String[] tempStringArray = inputLine.split("\\s");
-						int port = Integer.parseInt(tempStringArray[4].substring(5,
-								tempStringArray[4].length()-1));
-						myFileSender.sendFileTo("127.0.0.1", port);
+						myFileSender.display(tempStringArray[3].substring(6, tempStringArray[3].length()));
+						if (tempStringArray[3].substring(6, tempStringArray[3].length()).equals("yes")){
+							
+							int port = Integer.parseInt(tempStringArray[4].substring(5,
+									tempStringArray[4].length()-1));	
+							myFileSender.sendFileTo("127.0.0.1", port);							///////////////////////////////////IP HANDLE
+						}
 	            	}
 	            	else {
 	            		System.out.println("There is a bug in your code");

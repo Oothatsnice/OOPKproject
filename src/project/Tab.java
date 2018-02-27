@@ -196,10 +196,12 @@ public class Tab {
 				}
 				else if (verifyStr.equals("filerespons")) {
 					String[] tempStringArray = tempString.split("\\s");
-					int port = Integer.parseInt(tempStringArray[4].substring(5,
-							tempStringArray[4].length()-1));
-					
-					myFileSender.sendFileTo(myIP, port);
+					myFileSender.display(tempStringArray[3].substring(6, tempStringArray[3].length()));
+					if (tempStringArray[3].substring(6, tempStringArray[3].length()).equals("yes")){
+						int port = Integer.parseInt(tempStringArray[4].substring(5,
+								tempStringArray[4].length()-1));	
+						myFileSender.sendFileTo(myIP, port);						
+					}
 				}
 				else {
 					newTempString = "There is a bug in your CODE!";
