@@ -65,6 +65,7 @@ public class FileReceiver extends Thread{
 		question.append("\". Supplied message: ");
 		for (int i = 5; i < len - 2; i++) {
 			question.append(stringArray[i]);
+			question.append(" ");
 		}
 		question.append("\n");
 		
@@ -121,7 +122,7 @@ public class FileReceiver extends Thread{
         try {        	
         	byte[] myByteArray = new byte[fileSize];
         	InputStream is = clientSocket.getInputStream();
-        	fos = new FileOutputStream("/afs/kth.se/home/g/n/gnoren/" + fileName);    	
+        	fos = new FileOutputStream(System.getProperty("user.dir") + "\\" + fileName);    	
         	bos = new BufferedOutputStream(fos);
         	bytesRead = is.read(myByteArray, 0, myByteArray.length);
         	current = bytesRead;

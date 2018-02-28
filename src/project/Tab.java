@@ -196,7 +196,13 @@ public class Tab {
 				}
 				else if (verifyStr.equals("filerespons")) {
 					String[] tempStringArray = tempString.split("\\s");
-					myFileSender.display(tempStringArray[3].substring(6, tempStringArray[3].length()));
+					StringBuilder tempBuilder = new StringBuilder();
+					for (int i = 5; i < tempStringArray.length - 2; i++) {
+						tempBuilder.append(tempStringArray[i]);
+						tempBuilder.append(" ");
+					}
+					myFileSender.display("Reply: " + tempStringArray[3].substring(6, tempStringArray[3].length()) + "\n");
+					myFileSender.display("Message: " + tempBuilder.toString() + "\n");
 					if (tempStringArray[3].substring(6, tempStringArray[3].length()).equals("yes")){
 						int port = Integer.parseInt(tempStringArray[4].substring(5,
 								tempStringArray[4].length()-1));	
