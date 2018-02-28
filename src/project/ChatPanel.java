@@ -152,8 +152,12 @@ public class ChatPanel extends JPanel{
 		}
 		
 		public void actionPerformed(ActionEvent e){
-			String newText = myTextArea.getText();
-			myChatObs.sendUpdate(newText);
+			String tempString = myTextArea.getText();
+			Scanner tempScanner = new Scanner(tempString);
+			while(tempScanner.hasNextLine()) {
+				myChatObs.sendUpdate(tempScanner.nextLine());
+			}
+			tempScanner.close();
 		}			
 	}
 	
