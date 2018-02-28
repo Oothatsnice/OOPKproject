@@ -133,7 +133,7 @@ public class FileReceiver extends Thread{
         		if (bytesRead >= 0) {
         			current += bytesRead;
         			try {
-        				myDoc.insertString(myDoc.getLength(), Integer.toString(current), null);
+        				myDoc.insertString(myDoc.getLength(), (Integer.toString(current)+"\n"), null);
         			} catch (BadLocationException e) {
         				e.printStackTrace();
         			}

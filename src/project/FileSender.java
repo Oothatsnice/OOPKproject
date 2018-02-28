@@ -28,7 +28,7 @@ public class FileSender extends Thread{
 		bis = new BufferedInputStream(fis);
 		
 		myFrame = new JFrame();
-		myFrame.setTitle("FileReceiver");
+		myFrame.setTitle("FileSender");
 		myFrame.getContentPane().setLayout(new BoxLayout(myFrame.getContentPane(), BoxLayout.Y_AXIS));
 		myTextPane = new JTextPane();
 		myTextPane.setPreferredSize(new Dimension(400,350));
