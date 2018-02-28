@@ -42,7 +42,7 @@ public class Tab {
 		myDisplayPanel = new DisplayPanel();
 		myClient = new Client();
 		
-		myIP = "127.0.0.1";
+		myIP = "10.0.0.144";
 		myClient.startConnection(myIP, 4000);
 		
 		myPanel = new JPanel();

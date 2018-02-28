@@ -137,7 +137,7 @@ public class Server extends Thread{
 						if (tempStringArray[3].substring(6, tempStringArray[3].length()).equals("yes")){
 							int port = Integer.parseInt(tempStringArray[4].substring(5,
 									tempStringArray[4].length()-1));	
-							myFileSender.sendFileTo("127.0.0.1", port);							///////////////////////////////////IP HANDLE
+							myFileSender.sendFileTo(clientSocket.getRemoteSocketAddress().toString(), port);							///////////////////////////////////IP HANDLE
 						}
 	            	}
 	            	else {
