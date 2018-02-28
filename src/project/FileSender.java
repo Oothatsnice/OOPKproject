@@ -41,7 +41,11 @@ public class FileSender extends Thread{
 			e.printStackTrace();
 		}
 		
-		myFrame.getContentPane().add(myTextPane);
+		JScrollPane myScrollPane = new JScrollPane(myTextPane);
+		myScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		myScrollPane.setPreferredSize(new Dimension(400, 350));
+		myScrollPane.setMinimumSize(new Dimension(10, 10));	
+		myFrame.getContentPane().add(myScrollPane);
 		myFrame.pack();
 		
 		myFrame.setVisible(true);
